@@ -21,4 +21,13 @@ class Cupcake(db.Model):
 
     image = db.Column(db.String(200),default="https://tinyurl.com/demo-cupcake",nullable = False)
 
+    def serialize(self):
+        return {
+            'id':self.id,
+            'flavor':self.flavor,
+            'size':self.size,
+            'rating':self.rating,
+            'image':self.image
+        }
 
+    
