@@ -1,5 +1,6 @@
 """Flask app for Cupcakes"""
 from flask import Flask, json, jsonify, request
+from flask.templating import render_template
 from models import db, connect_db, Cupcake
 
 app = Flask(__name__)
@@ -16,7 +17,8 @@ def get_all_cupcakes():
 
 @app.route('/api/cupcakes',methods=["POST"])
 def add_cupcake():
-    cupcake = Cupcake(flavor=request.json['flavor'],size=request.json['size'],rating=request.json['rating'],image=request.json['image'],)
+    print(request.json.get("image","fuckkkkkk"))
+    cupcake = Cupcake(flavor=request.json['flavor'],size=request.json['size'],rating=request.json['rating'],image=request.json.get('image',None))
     db.session.add(cupcake)
     db.session.commit()
     return jsonify(cupcake=cupcake.serialize()), 201
@@ -47,3 +49,8 @@ def delete_cupcake(id):
     db.session.delete(cupcake)
     db.session.commit()
     return {"message":"Deleted"}
+
+
+@app.route('/')
+def home_page():
+    return render_template('home.html')
