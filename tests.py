@@ -5,7 +5,7 @@ from models import db, Cupcake
 
 # Use test database and don't clutter tests with SQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///cupcakes_test'
-app.config['SQLALCHEMY_ECHO'] = False
+app.config['SQLALCHEMY_ECHO'] = False 
 
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
@@ -107,3 +107,17 @@ class CupcakeViewsTestCase(TestCase):
             })
 
             self.assertEqual(Cupcake.query.count(), 2)
+
+    def test_updating_cupcake(self):
+        original_flavor = self.cupcake.flavor
+        with app.test_client() as client:
+            res_json = client.patch(f"/api/cupcakes/{self.cupcake.id}",json={"flavor":"new flavor"}).json
+
+            self.assertNotEqual(original_flavor,res_json['flavor'])
+
+    def test_deleting_cupcakes(self):
+        with app.test_client() as client:
+            resp_json = client.delete(f"/api/cupcakes/{self.cupcake.id}").json
+
+            self.assertEqual(Cupcake.query.get(self.cupcake.id),None)
+            self.assertEqual(resp_json,{'message': 'Deleted'})
